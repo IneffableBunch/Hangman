@@ -12,11 +12,12 @@ def game_engine():
     hmgame = Word(game_word, game_max_guesses)
 
     while True:
+
+        print(hmgame.word_prog())
         print("\nYou have {0} guesses left.".format(hmgame.max_guesses - hmgame.player_guesses))
         guess = input("Your guess: ")
 
-        print(hmgame.guess(guess))
-        print(hmgame.word_prog())
+        print(hmgame.guess(guess), '\n')
 
 
 if __name__ == '__main__':

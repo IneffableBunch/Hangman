@@ -1,4 +1,37 @@
 from sys import exit
+from functools import wraps
+
+
+def check_guesses(func):
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+
+        if args[0].player_guesses >= args[0].max_guesses:
+            print("You used up all of your guesses!")
+            exit(0)
+
+        return result
+
+    return wrapper
+
+
+def player_progress(func):
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+
+        if args[0].word_prog() == args[0].word:
+            print(args[0].word)
+            print("You win!")
+            exit(0)
+
+        return result
+
+    return wrapper
+
 
 class Word:
 
@@ -12,11 +45,8 @@ class Word:
         self.hits = set()
         self.misses = set()
 
-    def check_guess_amt(self):
-        if self.player_guesses >= self.max_guesses:
-            print("You used up all of your guesses!")
-            exit(0)
-
+    @player_progress
+    @check_guesses
     def guess(self, letter):
         """Checks if letter guessed is in main word.
         :rtype: string
@@ -29,25 +59,20 @@ class Word:
         if not (len(letter) >= 2):
 
             if letter in self.misses:
-                self.check_guess_amt()
 
                 return "You already guessed that letter!"
             elif letter in self.word:
                 self.hits.add(letter)
                 self.player_guesses += 1
-                self.check_guess_amt()
 
                 return "You guessed the correct letter!"
             else:
                 self.player_guesses += 1
-                self.check_guess_amt()
 
                 self.misses.add(letter)
                 return "That letter is not in the word."
 
         else:
-            self.check_guess_amt()
-
             return 'Only guess letters!'
 
     def word_prog(self):
