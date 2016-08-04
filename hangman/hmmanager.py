@@ -2,13 +2,13 @@ from sys import exit
 from functools import wraps
 
 
-def check_guesses(func):
+def check_fail(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
 
-        if args[0].player_guesses >= args[0].max_guesses:
+        if args[0].player_guesses >= args[0].max_guesses and args[0].word_prog() != args[0].word:
             print("You used up all of your guesses!")
             exit(0)
 
@@ -17,7 +17,7 @@ def check_guesses(func):
     return wrapper
 
 
-def player_progress(func):
+def check_win(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -45,8 +45,9 @@ class Word:
         self.hits = set()
         self.misses = set()
 
-    @player_progress
-    @check_guesses
+
+    @check_win
+    @check_fail
     def guess(self, letter):
         """Checks if letter guessed is in main word.
         :rtype: string
@@ -56,7 +57,7 @@ class Word:
             print("You used up all of your guesses!")
             exit(0)
 
-        if not (len(letter) >= 2):
+        if len(letter) == 1:
 
             if letter in self.misses:
 
